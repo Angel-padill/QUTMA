@@ -1,12 +1,5 @@
 import {Schema,model} from"mongoose";
-
-interface IQuestionnaire{
-    title: String,
-    typo: "radio" | "chackbox" | "select" | "text",
-    isMandatory:boolean,
-    description: string,
-    IdUsuario: String,
-}
+import {IQuestionnaire} from "../GlobalTypes"
 
 const QuestionnairesSchema = new Schema<IQuestionnaire>({
     title: {
@@ -20,17 +13,8 @@ const QuestionnairesSchema = new Schema<IQuestionnaire>({
     },
     IdUsuario: {
         type: String,
+        ref: "users",
         required: true
-    },
-    typo: {
-        type: String,
-        enum: ["radio", "checkbox", "select", "text"],
-        required: true
-    
-    },
-    isMandatory:{
-        type:Boolean,
-        required:true
     },
 });
 
