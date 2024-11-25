@@ -1,7 +1,8 @@
 interface IUser {
+    _id:string;
     name:string;
     email:string;
-    lastName:string;
+    lastname:string;
     password:string;
     rol: "administrator" | "client";
 }

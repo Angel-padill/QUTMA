@@ -27,7 +27,7 @@ export interface IQuestion{
 export interface IUser {
     name:string;
     email:string;
-    lastName:string;
+    lastname:string;
     password:string;
     rol: "administrator" | "client";
 }

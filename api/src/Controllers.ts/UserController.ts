@@ -1,20 +1,20 @@
 import { Request, Response } from "express"
 import { UserModel } from "../models/Usermodel"
-
+import Jwt from "jsonwebtoken";
 
 export const registerUsers = async (req:Request,res:Response):Promise<any>=>{
     try{
         // Primero validar que los datos existen
         const name = req.body.name
         const email = req.body.email
+        const lastname = req.body.lastname
         const password = req.body.password
-        const lastNames = req.body.rol
         const rol = req.body.rol
         //Administradores no pueden crear clientes 
         if (req.user?.rol === "administrator" && rol === "client"){
             return res.status(400).json ({msg:"los admonistradores no pueden crear clientes"})
         }
-        if(!name || !email ||!lastNames  ||!password ||!rol){
+        if(!name || !email ||!lastname  ||!password ||!rol){
             return res.status(400).json({
                 msg:"Faltan datos para crear un usuario"
             })
@@ -25,14 +25,18 @@ export const registerUsers = async (req:Request,res:Response):Promise<any>=>{
                 msg:"no puedes crear un administrador si no lo eres uno"
             })
         }
-        await UserModel.create({
+       const user = await UserModel.create({
             name: name,
-            lastNames:lastNames,
             email:email,
+            lastname: lastname,
             password:password,
             rol:rol,
 
-        })
+        });
+
+        const token = Jwt.sign(JSON.stringify(user),"pocoyo");
+        res.status(200).json({msg:"usuario regisyrado con exito", token})
+
 
 
 return res.status(200).json({msg: "usuario registrado con exito"})
@@ -44,3 +48,22 @@ return res.status(200).json({msg: "usuario registrado con exito"})
     }
 
 }
+
+
+export const singin = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { email, password } = req.body;
+        const user = await UserModel.findOne({ email, password });
+        if (!user) {
+            res.status(401).json({ message: "usuario inexistente" });
+            return;
+        }
+        const token = Jwt.sign(
+            { id: user._id, email: user.email }, 
+            process.env.JWT_SECRET || "secretKey",
+        );
+        res.status(200).json({ message: "Inicio de sesión exitoso", token });
+    } catch (error) {
+        res.status(500).json({ message: "no jala :(", error });
+    }
+};
