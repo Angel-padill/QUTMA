@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import axios from "axios";
 
 
 const App = () => {
@@ -13,9 +14,20 @@ const App = () => {
   }
 
   const onSubmit = () => {
+    try {
+      const response = awaitaxios.post("http://localhost:4000".data);
+      if (response.status === 200){
+        alert("correcto");
+      }else{
+        alert("incorrecta");
+      }
+    }catch (error){
+      alert ("incorrecta");
+      console.error("error al enviar los datos:".error);
+    }
     //Peticion a la DB
     console.log(data)
-  }
+  };
 
   return (
     <Container className="mt-3">
