@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import axios from "axios";
-
+import  {useNavigate} from "react-router-dom";
 
 const App = () => {
   const [data, setData] = useState({});
-
+const navigate = useNavigate();
   const onChange = (e) => {
     e.preventDefault();
     const loginData = data;
@@ -13,10 +13,15 @@ const App = () => {
     setData(loginData)
   }
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     try {
-      const response = awaitaxios.post("http://localhost:4000".data);
-      if (response.status === 200){
+      const response = await axios.post("http://localhost:4000".data);
+      const user = res.data.user;
+      user.logined = ture;
+      localStorage.user = JSON.stinggify(user)
+      navigate("/list-q")
+
+    if (response.status === 200){
         alert("correcto");
       }else{
         alert("incorrecta");

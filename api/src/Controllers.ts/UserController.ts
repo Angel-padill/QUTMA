@@ -1,69 +1,80 @@
-import { Request, Response } from "express"
-import { UserModel } from "../models/Usermodel"
-import Jwt from "jsonwebtoken";
+import { Request, Response } from "express";
+import { UserModel } from "../models/Usermodel";
+import jwt from "jsonwebtoken";
 
-export const registerUsers = async (req:Request,res:Response):Promise<any>=>{
-    try{
-        // Primero validar que los datos existen
+export const registerUsers= async (req:Request, res:Response):Promise<any> =>{
+    try {
+
+
         const name = req.body.name
+        const lastName = req.body.lastname
         const email = req.body.email
-        const lastname = req.body.lastname
         const password = req.body.password
         const rol = req.body.rol
-        //Administradores no pueden crear clientes 
-        if (req.user?.rol === "administrator" && rol === "client"){
-            return res.status(400).json ({msg:"los admonistradores no pueden crear clientes"})
-        }
-        if(!name || !email ||!lastname  ||!password ||!rol){
+
+        if (req.user?.rol === "administrator" && rol ==="client"){
             return res.status(400).json({
-                msg:"Faltan datos para crear un usuario"
+                msg:"los admins no puedes crear clientes"
             })
         }
-        // validar que el usuario a crear sea administrador
-        if(rol === " administrador" && req.user?.rol != "administrator"){
+
+        if(!name || !email || !lastName || !password || !rol){
             return res.status(400).json({
-                msg:"no puedes crear un administrador si no lo eres uno"
+                msg:"faltan datos we"
             })
         }
-       const user = await UserModel.create({
+
+        if(rol==="administrator " && req.user?.rol != "administrator"){
+            return res.status(400).json({
+                msg:"no pudes crear un admin si no lo eres"
+            })
+        }
+
+        const user = await UserModel.create({
             name: name,
-            email:email,
-            lastname: lastname,
-            password:password,
-            rol:rol,
+            lastName: lastName,
+            email: email,
+            password: password,
+            rol: rol
+        })
 
-        });
+        const token = jwt.sign(JSON.stringify(user),"shhh")
 
-        const token = Jwt.sign(JSON.stringify(user),"pocoyo");
-        res.status(200).json({msg:"usuario regisyrado con exito", token})
+        return res.status(200).json({
+            msg:"usuario registrado con exito", token
+        })
 
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            msg:"error al crear el usuario"
+        })
+    }
+}
 
+export const singin= async (req:Request, res: Response):Promise<any>=>{
+    //correo y contrseña
+    //Verificr que el usuario existe
+    //si no existe devuelve un error
+    //Soi existe devuelve un o
+    try {
+        const user = await UserModel.findOne({email:req.body.email, password:req.body.password})
+        
+       if(!user){
+        res.status(400).json({msg: "No hay coincidencias en el sistema"
 
-return res.status(200).json({msg: "usuario registrado con exito"})
-    }catch (error){
+        })
+        return;
+       }
+        const token = jwt.sign(JSON.stringify(user),"pocoyo");
+        res.status(200).json({msg: "Sesión iniciada con exito", token})
+        return
+
+    } catch (error) {
         console.log(error);
-        return res.status(500).json({msg: "Hubo un error al crear un usuario"})
-
-
+        return res.status(500).json({
+            msg:"Hubo un error al iniciar sesion"
+        })
     }
 
 }
-
-
-export const singin = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { email, password } = req.body;
-        const user = await UserModel.findOne({ email, password });
-        if (!user) {
-            res.status(401).json({ message: "usuario inexistente" });
-            return;
-        }
-        const token = Jwt.sign(
-            { id: user._id, email: user.email }, 
-            process.env.JWT_SECRET || "secretKey",
-        );
-        res.status(200).json({ message: "Inicio de sesión exitoso", token });
-    } catch (error) {
-        res.status(500).json({ message: "no jala :(", error });
-    }
-};
