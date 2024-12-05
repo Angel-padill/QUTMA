@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import { registerUsers } from "./Controllers.ts/UserController";
+import { createQuizz, getMetrics, getQuestionnaires } from "./controllers/QuestionairesControllers";
 
 const app: Application = express();
 
@@ -15,5 +16,6 @@ app.get("/", (_req: Request, res: Response) => {
 
 //usuarios
 app.post("/users/create",registerUsers)
-
+app.get("/questionnaire/get-metrics", getMetrics)
+app.get("/questionnaires/get-all", getQuestionnaires)
 export default app;

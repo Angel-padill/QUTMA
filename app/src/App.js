@@ -19,6 +19,11 @@ const navigate = useNavigate();
       const user = res.data.user;
       user.logined = ture;
       localStorage.user = JSON.stinggify(user)
+      if(user.rol == "administrator"){
+        navigate("/home")
+      }else{
+        navigate("/list-q")
+      }
       navigate("/list-q")
 
     if (response.status === 200){

@@ -5,17 +5,16 @@ import { AnwerQuestionnaire } from './components/AnwerQuestionnaire';
 export const CreateQuestionnaire = () => {
 
     const [showQuestionnaire, setShowQuestionnaire] = useState(false);
-
+    const defaultQuestion = {
+        title: "Pregunta sin titulo",
+        type: "radio",
+        options: ["Opción 1"],
+        isMandatory: false,
+    }
     const [createQuestionnaire, setCreateQuestionnaire] = useState({
         title: "Cuestionario vacio",
         description: "Descripcion simple",
         questions: [
-            {
-                title: "Pregunta sin titulo",
-                type: "radio",
-                options: ["Opción 1"],
-                isMandatory: false,
-            }
         ]
     });
 
@@ -38,12 +37,8 @@ export const CreateQuestionnaire = () => {
     };
 
     const addQuestion = () => {
-        const data = createQuestionnaire;
-        data.questions.push({
-            title: "Pregunta sin titulo",
-            type: "radio",
-            options: ["Opción 1"]
-        })
+        const data = createQuestionnaire
+        data.questions.push(defaultQuestion)
         setCreateQuestionnaire({ ...data })
     };
 
